@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VAPE MAFIA | ニコパフ通販</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Noto Sans JP",sans-serif;background:#06060a;color:#f2efe8;line-height:1.8;overflow-x:hidden}
+a{color:#c9a84c;text-decoration:none}
+img{max-width:100%;display:block}
+.announce{background:#bf3227;text-align:center;padding:10px 16px;font-size:13px;font-weight:500;color:#fff;letter-spacing:1px}
+.hero{position:relative;min-height:90vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:60px 20px;overflow:hidden}
+.hero-bg{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:0;opacity:0.5}
+.hero-content{position:relative;z-index:2}
+.hero h1{font-size:clamp(28px,6vw,56px);font-weight:800;letter-spacing:3px;line-height:1.2;margin-bottom:16px}
+.hero h1 span{color:#c9a84c}
+.hero p{font-size:clamp(14px,3vw,20px);color:#b0afc0;margin-bottom:32px;letter-spacing:2px}
+.cta{display:inline-block;padding:16px 48px;background:#bf3227;color:#fff !important;font-size:18px;font-weight:700;border-radius:8px;transition:background .3s;letter-spacing:1px}
+.cta:hover{background:#d43e32}
+.sec{padding:50px 20px;max-width:800px;margin:0 auto}
+.sec h2{font-size:clamp(22px,5vw,36px);font-weight:800;margin-bottom:4px;text-align:center;letter-spacing:2px}
+.sec h2 span{color:#c9a84c}
+.gl{width:40px;height:3px;background:#c9a84c;margin:12px auto 24px}
+.sub{text-align:center;font-size:16px;color:#b0afc0;margin-bottom:20px}
+
+.problems li{padding:12px 20px;margin-bottom:8px;background:#131318;border-left:3px solid #bf3227;border-radius:0 8px 8px 0;font-size:16px;list-style:none}
+
+.world-stats{display:flex;justify-content:center;gap:32px;margin:32px 0;flex-wrap:wrap}
+.world-stat{text-align:center}
+.world-stat .big{font-size:42px;font-weight:800;color:#c9a84c;line-height:1}
+.world-stat .sub2{font-size:13px;color:#b0afc0;margin-top:4px}
+
+.legal-box{background:#131318;border:1px solid rgba(76,175,80,.3);border-radius:12px;padding:32px;margin-top:24px}
+.legal-box .badge{display:inline-block;background:#4caf50;color:#fff;font-size:12px;font-weight:700;padding:4px 12px;border-radius:4px;margin-bottom:16px;letter-spacing:2px}
+.legal-item{display:flex;gap:12px;margin-bottom:16px;font-size:15px}
+.legal-item .icon{color:#4caf50;font-size:20px;flex-shrink:0}
+.warn{background:rgba(191,50,39,.1);border:1px solid rgba(191,50,39,.3);border-radius:8px;padding:16px 20px;margin-top:20px;font-size:14px;color:#e88;line-height:1.8}
+
+.brand-box{background:#0e0e14;border:1px solid rgba(201,168,76,.15);border-radius:16px;padding:28px 24px;text-align:center}
+.brand-stats{display:flex;justify-content:center;gap:40px;margin-top:24px;flex-wrap:wrap}
+.brand-stat .big{font-size:42px;font-weight:800;color:#c9a84c;line-height:1}
+.brand-stat .sub2{font-size:12px;color:#b0afc0;letter-spacing:2px;margin-top:4px}
+
+table.cmp{width:100%;border-collapse:collapse;font-size:14px;margin-top:24px}
+table.cmp th,table.cmp td{padding:14px 12px;text-align:center;border-bottom:1px solid rgba(255,255,255,.06)}
+table.cmp th{color:#b0afc0;font-weight:400;font-size:12px;letter-spacing:2px}
+table.cmp .hi{color:#c9a84c;font-weight:700}
+table.cmp .dim{color:#666}
+
+.review{background:#131318;border-radius:12px;padding:16px 20px;margin-bottom:10px}
+.review .stars{color:#c9a84c;font-size:18px;margin-bottom:8px}
+.review .txt{font-size:15px;color:#e8e6df}
+.review .who{font-size:12px;color:#666;margin-top:8px}
+
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px}
+.step{text-align:center;padding:20px 14px;background:#131318;border-radius:12px}
+.step .sn{font-size:32px;font-weight:800;color:#c9a84c;line-height:1}
+.step .st{font-size:16px;font-weight:700;margin-top:12px}
+.step .sd{font-size:13px;color:#b0afc0;margin-top:8px}
+@media(max-width:600px){.steps{grid-template-columns:1fr}}
+
+.prods{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:24px}
+.prod{background:#131318;border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:20px;text-align:center;transition:transform .3s}
+.prod:hover{transform:translateY(-4px)}
+.prod img{width:140px;height:140px;object-fit:contain;margin:0 auto 16px}
+.prod .nm{font-size:15px;font-weight:700}
+.prod .pr{color:#c9a84c;font-size:20px;font-weight:800;margin-top:8px}
+.prod .nt{font-size:12px;color:#b0afc0;margin-top:4px}
+.prod .btn{display:block;margin-top:16px;padding:10px;background:#bf3227;color:#fff !important;font-weight:600;border-radius:6px;font-size:14px}
+
+.faq-item{border-bottom:1px solid rgba(255,255,255,.06);padding:14px 0}
+.faq-q{font-size:16px;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.faq-a{font-size:14px;color:#b0afc0;margin-top:12px;display:none;line-height:1.9}
+.faq-item.open .faq-a{display:block}
+
+.foot{text-align:center;padding:40px 20px 100px;border-top:1px solid rgba(255,255,255,.06);font-size:12px;color:#4a4a58}
+.foot a{color:#666}
+
+.float-cta{position:fixed;bottom:0;left:0;width:100%;z-index:999;background:rgba(6,6,10,.95);border-top:1px solid #c9a84c;padding:12px 20px;text-align:center;backdrop-filter:blur(8px)}
+.float-cta a{display:inline-block;padding:12px 40px;background:#bf3227;color:#fff !important;font-weight:700;border-radius:6px;font-size:16px}
+</style>
+<meta name="description" content="世界No.1シーシャブランドAL FAKHERを日本へ。ニコチン入り使い捨てベイプ（ニコパフ）の正規個人輸入代行。8,000円以上送料無料。20歳以上対象。3〜10日お届け。">
+<link rel="canonical" href="https://vapemafia.jp/lp/">
+<meta property="og:title" content="VAPE MAFIA | AL FAKHER正規輸入 ニコパフ通販">
+<meta property="og:description" content="世界No.1シーシャブランドAL FAKHERを日本へ。正規個人輸入代行。シーシャ以上、タバコ未満の新体験。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://vapemafia.jp/lp/">
+<meta property="og:image" content="https://vapemafia.jp/wp-content/uploads/2026/04/lp2-hero-v3.jpg">
+</head>
+<body>
+
+<div class="announce">📦 8,000円以上で送料無料 ｜ 正規品保証 ｜ 3〜10日でお届け</div>
+
+<!-- ファーストビュー -->
+<div class="hero" style="min-height:auto;padding:0">
+    <img src="https://vapemafia.jp/wp-content/uploads/2026/04/lp2-hero-v3.jpg" alt="シーシャ以上、タバコ未満。AL FAKHER CROWN BAR" style="width:100%;display:block">
+    <div style="text-align:center;padding:32px 20px 40px;background:#06060a">
+        <div style="display:inline-block;text-align:left;margin-bottom:28px">
+            <div style="font-size:16px;margin-bottom:12px"><span style="color:#c9a84c;margin-right:8px">✅</span>タールゼロ、におい残りゼロ</div>
+            <div style="font-size:16px;margin-bottom:12px"><span style="color:#c9a84c;margin-right:8px">✅</span>月4,000円〜。タバコ代が1/5に</div>
+            <div style="font-size:16px;margin-bottom:0"><span style="color:#c9a84c;margin-right:8px">✅</span>充電して吸うだけ。火もライターもいらない</div>
+        </div>
+        <br>
+        <a href="https://vapemafia.jp/shop/" class="cta">商品を見る →</a>
+    </div>
+</div>
+
+<!-- 悩み共感 -->
+<div class="sec">
+    <h2>こんな経験、<span>ありませんか？</span></h2><div class="gl"></div>
+    <ul>
+        <li>タバコ代が月2万円を超えている</li>
+        <li>服や髪ににおいがつくのが嫌</li>
+        <li>喫煙所がどんどん減って肩身が狭い</li>
+        <li>IQOSに変えたけど結局におう</li>
+        <li>もっとコスパ良く吸いたい</li>
+    </ul>
+</div>
+
+<!-- ニコパフとは？（世界の流行） -->
+<div class="sec">
+    <h2><span>ニコパフ</span>とは？</h2><div class="gl"></div>
+    <p class="sub">世界中で急速に広がっている次世代の電子タバコです。</p>
+    <p style="font-size:15px;color:#e8e6df;text-align:center;line-height:2">タバコ葉を燃やさず、リキッドを加熱して蒸気を吸う。<br>火もいらない。灰もでない。においも残らない。<br>充電して吸うだけ。それがニコパフ。</p>
+    <div class="world-stats">
+        <div class="world-stat"><div class="big">5億+</div><div class="sub2">世界のユーザー数</div></div>
+        <div class="world-stat"><div class="big">100+</div><div class="sub2">展開国数</div></div>
+        
+    </div>
+    <div style="text-align:center;margin-top:40px"><img src="https://vapemafia.jp/wp-content/uploads/2026/04/lp2-sakura-v2.jpg" alt="ニコパフ どこでも手軽に" style="max-width:100%;width:100%;border-radius:12px;margin:0 auto"><p style="font-size:14px;color:#b0afc0;margin-top:10px;text-align:center">どこでも手軽に。それがニコパフ。</p></div>
+</div>
+
+<!-- 違法じゃないの？ -->
+<div class="sec">
+    <h2>「でも<span>違法</span>じゃないの？」</h2><div class="gl"></div>
+    <p style="text-align:center;font-size:clamp(24px,5vw,40px);font-weight:800;color:#4caf50;margin-bottom:32px;letter-spacing:2px">結論：個人輸入は<span style="border-bottom:3px solid #4caf50">合法</span>です。</p>
+    <div class="legal-box">
+        <span class="badge">合法</span>
+        <div class="legal-item"><span class="icon">✓</span><span>自己使用目的の個人輸入は薬機法上認められています</span></div>
+        <div class="legal-item"><span class="icon">✓</span><span>VAPE MAFIAは海外法人から直接お届けする正規ルート</span></div>
+        <div class="legal-item"><span class="icon">✓</span><span>20歳以上の方のみ対象（年齢確認あり）</span></div>
+        <div class="legal-item"><span class="icon">✓</span><span>海外法人が運営</span></div>
+    </div>
+    <div class="warn">⚠️ SNSやフリマアプリでの購入は違法の可能性があります。2026年3月に全国初の書類送検事例が発生しています。正規ルートで購入してください。</div>
+</div>
+
+<!-- 安全なの？→ ブランドの力 -->
+<div class="sec">
+    <h2>「<span>安全</span>なの？」</h2><div class="gl"></div>
+    <p class="sub">世界No.1シーシャブランドが作っています。</p>
+    <div class="brand-box">
+        <p style="font-size:12px;color:#c9a84c;letter-spacing:4px;margin-bottom:8px">THE BRAND</p>
+        <p style="font-size:24px;font-weight:800;margin-bottom:16px">AL FAKHER — ドバイ発、世界の頂点。</p>
+        <p style="font-size:15px;color:#b0afc0;line-height:2">1999年にUAE（ドバイ）で創業。<br>25年以上の歴史。90カ国以上で展開。<br>シーシャ業界の世界No.1ブランドが作った<br>ニコパフ、それが<strong style="color:#f2efe8">CROWN BAR</strong>です。</p>
+        <div class="brand-stats">
+            <div class="brand-stat"><div class="big">90+</div><div class="sub2">COUNTRIES</div></div>
+            <div class="brand-stat"><div class="big">1999</div><div class="sub2">FOUNDED</div></div>
+            <div class="brand-stat"><div class="big">#1</div><div class="sub2">WORLD RANK</div></div>
+        </div>
+    </div>
+    <div style="text-align:center;margin-top:32px"><img src="https://vapemafia.jp/wp-content/uploads/2026/04/lp2-club-v2.jpg" alt="ニコパフ 世界No.1ブランド" style="max-width:100%;width:100%;border-radius:12px;margin:0 auto"><p style="font-size:14px;color:#b0afc0;margin-top:10px;text-align:center">世界No.1ブランドの味を、手のひらに。</p></div>
+</div>
+
+<!-- こんなに安い -->
+<div class="sec">
+    <h2>「<span>高い</span>んじゃないの？」</h2><div class="gl"></div>
+    <p class="sub">タバコの1/5。年間20万円の節約。</p>
+    <table class="cmp">
+        <thead><tr><th></th><th>紙タバコ</th><th>IQOS</th><th class="hi">ニコパフ</th></tr></thead>
+        <tbody>
+            <tr><td>月額</td><td class="dim">¥20,400</td><td class="dim">¥20,400</td><td class="hi">¥4,000〜</td></tr>
+            <tr><td>年間</td><td class="dim">¥248,200</td><td class="dim">¥248,200</td><td class="hi">¥48,000〜</td></tr>
+            <tr><td>におい</td><td class="dim">強い</td><td class="dim">ある</td><td class="hi">なし</td></tr>
+            <tr><td>タール</td><td class="dim">あり</td><td class="dim">少ない</td><td class="hi">なし</td></tr>
+            <tr><td>手間</td><td class="dim">火・灰皿</td><td class="dim">スティック</td><td class="hi">充電だけ</td></tr>
+        </tbody>
+    </table>
+    <p style="text-align:center;margin-top:24px;font-size:15px">年間<span style="color:#bf3227;font-weight:800;font-size:24px">20万円</span>の節約。</p>
+    <div style="text-align:center;margin-top:24px"><a href="https://vapemafia.jp/shop/" class="cta">商品を見る →</a></div>
+    <div style="text-align:center;margin-top:32px"><img src="https://vapemafia.jp/wp-content/uploads/2026/02/IMG_2093.jpg" alt="AL FAKHER CROWN BAR" style="max-width:100%;width:100%;border-radius:12px;margin:0 auto"></div>
+</div>
+
+<!-- 口コミ -->
+<div class="sec">
+    <h2>実際に使った人の<span>声</span></h2><div class="gl"></div>
+    <div class="review"><div class="stars">★★★★★</div><div class="txt">シーシャバーで吸うあの味がそのまま。毎日のシーシャ代を考えたらコスパも良い。リピート確定。</div><div class="who">— T.K. さん（ダブルアップル購入）</div></div>
+    <div class="review"><div class="stars">★★★★★</div><div class="txt">紙タバコから完全に乗り換え。臭いゼロなのに吸いごたえ十分。もう戻れない。</div><div class="who">— S.M. さん（ミックスベリー購入）</div></div>
+    <div class="review"><div class="stars">★★★★★</div><div class="txt">3本セットで色んな味を試せる。ブルーベリーフリーズがお気に入り。</div><div class="who">— Y.H. さん（おまかせ3本セット購入）</div></div>
+    <p style="text-align:center;margin-top:16px;color:#b0afc0;font-size:14px">521件のレビュー 平均★4.5</p>
+</div>
+
+<!-- 購入ステップ -->
+<div class="sec">
+    <h2>購入は<span>かんたん3ステップ</span></h2><div class="gl"></div>
+    <div class="steps">
+        <div class="step"><div class="sn">1</div><div class="st">商品を選ぶ</div><div class="sd">フレーバー・ブランドで選択</div></div>
+        <div class="step"><div class="sn">2</div><div class="st">お支払い</div><div class="sd">クレジットカードで決済</div></div>
+        <div class="step"><div class="sn">3</div><div class="st">届くのを待つ</div><div class="sd">3〜10日でお届け</div></div>
+    </div>
+</div>
+
+<!-- 商品一覧 -->
+<div class="sec">
+    <h2>商品<span>ラインナップ</span></h2><div class="gl"></div>
+    <div class="prods">
+        <div class="prod"><img src="https://vapemafia.jp/wp-content/uploads/2025/12/puff-double-pomme-al-fakher.jpgTwo-Apple-450x450.webp" alt="ダブルアップル"><div class="nm">AL FAKHER ダブルアップル</div><div class="pr">¥8,500</div><div class="nt">送料無料</div><a href="https://vapemafia.jp/product/al-fakher-crown-bar-double-apple/" class="btn">購入する →</a></div>
+        <div class="prod"><img src="https://vapemafia.jp/wp-content/uploads/2025/12/puff-hyper-max-al-fakher-25k.jpg-450x450.webp" alt="ミックスベリー"><div class="nm">AL FAKHER ミックスベリー</div><div class="pr">¥8,500</div><div class="nt">送料無料 — 一番人気</div><a href="https://vapemafia.jp/product/al-fakher-crown-bar-mixed-berry/" class="btn">購入する →</a></div>
+        <div class="prod"><img src="https://vapemafia.jp/wp-content/uploads/2025/12/Gemini_Generated_Image_avpphhavpphhavpp-450x450.png" alt="アイスブルー"><div class="nm">AL FAKHER アイスブルー</div><div class="pr">¥8,500</div><div class="nt">送料無料</div><a href="https://vapemafia.jp/product/al-fakher-crown-bar-ice-blue/" class="btn">購入する →</a></div>
+        <div class="prod"><img src="https://vapemafia.jp/wp-content/uploads/2025/08/Disposable-Vape-Original-Bang-King-15000-Puffs-E-Cigarette-Factory-Wholesale-Vapes-with-Digital-Display-650mAh-Rechargeable-Puff-Vape-450x450.avif" alt="Bang King 3本セット"><div class="nm">Bang King おまかせ3本セット</div><div class="pr">¥11,500</div><div class="nt">送料無料 — コスパ最強</div><a href="https://vapemafia.jp/product/bang-king-15000-3pack-set/" class="btn">購入する →</a></div>
+    </div>
+</div>
+
+<!-- 購入する理由 -->
+<div class="sec" style="text-align:center">
+    <h2>今、<span>切り替える理由</span></h2><div class="gl"></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;margin-top:32px">
+        <div style="background:#131318;border-radius:12px;padding:28px 20px;border-top:3px solid #c9a84c">
+            <div style="font-size:36px;font-weight:800;color:#c9a84c;line-height:1">¥200,000</div>
+            <div style="font-size:15px;font-weight:700;margin-top:12px">年間の節約額</div>
+            <div style="font-size:13px;color:#b0afc0;margin-top:8px">紙タバコから切り替えるだけで<br>年間20万円が浮きます</div>
+        </div>
+        <div style="background:#131318;border-radius:12px;padding:28px 20px;border-top:3px solid #c9a84c">
+            <div style="font-size:36px;font-weight:800;color:#c9a84c;line-height:1">0</div>
+            <div style="font-size:15px;font-weight:700;margin-top:12px">タール・副流煙</div>
+            <div style="font-size:13px;color:#b0afc0;margin-top:8px">タバコ葉を燃やさないから<br>タールも副流煙もゼロ</div>
+        </div>
+        <div style="background:#131318;border-radius:12px;padding:28px 20px;border-top:3px solid #c9a84c">
+            <div style="font-size:36px;font-weight:800;color:#c9a84c;line-height:1">90+</div>
+            <div style="font-size:15px;font-weight:700;margin-top:12px">カ国で展開</div>
+            <div style="font-size:13px;color:#b0afc0;margin-top:8px">世界No.1シーシャブランド<br>AL FAKHERの正規品</div>
+        </div>
+    </div>
+    <div style="margin-top:40px"><a href="https://vapemafia.jp/shop/" class="cta">今すぐ購入する →</a></div>
+</div>
+
+<!-- FAQ -->
+<div class="sec">
+    <h2>よくある<span>質問</span></h2><div class="gl"></div>
+    <div class="faq-item open"><div class="faq-q">届くまでどのくらい？ <span>▼</span></div><div class="faq-a">通常3〜10日程度です。海外からの直送のため、国内通販より時間がかかる場合があります。</div></div>
+    <div class="faq-item"><div class="faq-q">支払い方法は？ <span>▼</span></div><div class="faq-a">クレジットカードに対応しております。ご注文後、決済リンクをメールでお送りします。</div></div>
+    <div class="faq-item"><div class="faq-q">1本でどのくらい持つ？ <span>▼</span></div><div class="faq-a">15,000パフのモデルで、1日300パフ使用した場合、約50日間持ちます。ライトユーザーなら2ヶ月以上使えます。</div></div>
+    <div class="faq-item"><div class="faq-q">タバコからの乗り換えで節約になる？ <span>▼</span></div><div class="faq-a">1日1箱吸う方がBang Kingに切り替えた場合、年間約20万円の節約になります。</div></div>
+    <div class="faq-item"><div class="faq-q">返品はできる？ <span>▼</span></div><div class="faq-a">初期不良の場合は交換対応いたします。商品到着後7日以内にご連絡ください。</div></div>
+</div>
+
+<!-- フッター -->
+<div class="foot">
+    <p>VAPE MAFIA</p>
+    <p style="margin-top:8px"><a href="https://vapemafia.jp/legal/">特定商取引法に基づく表記</a> ｜ <a href="https://vapemafia.jp/contact-us/">お問い合わせ</a></p>
+    <p style="margin-top:8px">© 2026 VAPE MAFIA</p>
+</div>
+
+<div class="float-cta"><a href="https://vapemafia.jp/shop/">今すぐ購入する →</a></div>
+
+<script>document.querySelectorAll(".faq-q").forEach(function(q){q.addEventListener("click",function(){this.parentElement.classList.toggle("open")})});</script>
+</body></html>
