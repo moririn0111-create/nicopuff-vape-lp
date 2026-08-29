@@ -81,13 +81,6 @@ table.cmp .dim{color:#666}
 
 .float-cta{position:fixed;bottom:0;left:0;width:100%;z-index:999;background:rgba(6,6,10,.95);border-top:1px solid #c9a84c;padding:12px 20px;text-align:center;backdrop-filter:blur(8px)}
 .float-cta a{display:inline-block;padding:12px 40px;background:#bf3227;color:#fff !important;font-weight:700;border-radius:6px;font-size:16px}
-
-/* PC：ヒーローの両脇が空くので、同じ画像をぼかして背景に敷く */
-@media(min-width:601px){
-.hero{position:relative;overflow:hidden}
-.hero::before{content:"";position:absolute;inset:-60px;background:url(https://vapemafia.jp/wp-content/uploads/2026/08/cloudx-hero-v3-2026.jpg) center/cover no-repeat;filter:blur(42px) brightness(.34) saturate(1.15);z-index:0}
-.hero>*{position:relative;z-index:1}
-.hero>img{width:auto !important;max-width:100%;max-height:84vh;margin:0 auto;box-shadow:0 24px 70px rgba(0,0,0,.85)}
 }
 </style>
 <meta name="description" content="世界No.1シーシャブランドAL FAKHERを日本へ。ニコチン入り使い捨てベイプ（ニコパフ）の正規個人輸入代行。8,000円以上送料無料。20歳以上対象。3〜10日お届け。">
@@ -96,7 +89,7 @@ table.cmp .dim{color:#666}
 <meta property="og:description" content="世界No.1シーシャブランドAL FAKHERを日本へ。正規個人輸入代行。ニコチン入りで満足感タバコ以上。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://nicopuff-vape.com/">
-<meta property="og:image" content="https://vapemafia.jp/wp-content/uploads/2026/08/cloudx-hero-v3-2026.jpg">
+<meta property="og:image" content="https://vapemafia.jp/wp-content/uploads/2026/08/cloudx-hero-pc-v2-2026.jpg">
 </head>
 <body>
 
@@ -104,7 +97,7 @@ table.cmp .dim{color:#666}
 
 <!-- ファーストビュー -->
 <div class="hero" style="min-height:auto;padding:0">
-    <img src="https://vapemafia.jp/wp-content/uploads/2026/08/cloudx-hero-v3-2026.jpg" alt="ニコチン入りで満足感タバコ以上。AL FAKHER CROWN BAR" style="width:100%;display:block">
+    <picture><source media="(min-width:601px)" srcset="https://vapemafia.jp/wp-content/uploads/2026/08/cloudx-hero-pc-v2-2026.jpg"><img src="https://vapemafia.jp/wp-content/uploads/2026/08/cloudx-hero-v3-2026.jpg" alt="個人輸入だから、安心。ニコチン入りで満足感タバコ以上。AL FAKHER CROWN BAR CLOUD X" style="width:100%;display:block"></picture>
     <div style="text-align:center;padding:32px 20px 40px;background:#06060a">
         <div style="display:inline-block;text-align:left;margin-bottom:28px">
             <div style="font-size:16px;margin-bottom:12px"><span style="color:#c9a84c;margin-right:8px">✅</span>タールゼロ、におい残りゼロ</div>
