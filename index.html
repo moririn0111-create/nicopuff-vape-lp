@@ -259,4 +259,40 @@ table.cmp .dim{color:#666}
 <div class="float-cta"><a href="https://vapemafia.jp/shop/">今すぐ購入する →</a></div>
 
 <script>document.querySelectorAll(".faq-q").forEach(function(q){q.addEventListener("click",function(){this.parentElement.classList.toggle("open")})});</script>
+
+<script>
+/* 商品一覧を vapemafia.jp と連動させる
+   ・名前 / 価格 / 画像 / 販売ページのURL / 在庫を毎回サーバーから取得する
+   ・在庫切れの商品は自動で非表示になる
+   ・通信に失敗したときは、HTMLに書いてある内容がそのまま表示される（真っ白にならない） */
+(function () {
+  var IDS = [2821, 2827, 2825, 811, 2879, 141];   // 掲載する商品（vapemafiaの商品ID）
+  var box = document.querySelector('.prods');
+  if (!box || !window.fetch) return;
+  var url = 'https://vapemafia.jp/wp-json/wc/store/v1/products?per_page=20&include=' + IDS.join(',');
+  fetch(url)
+    .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+    .then(function (list) {
+      var byId = {};
+      list.forEach(function (p) { byId[p.id] = p; });
+      var html = '';
+      IDS.forEach(function (id) {
+        var p = byId[id];
+        if (!p || !p.is_in_stock) return;                 // 在庫切れは載せない
+        var price = Number(p.prices.price);
+        var note  = price >= 8000 ? '送料無料' : '2本で送料無料';
+        var img   = (p.images && p.images[0]) ? p.images[0].src : '';
+        html += '<div class="prod">'
+             +    '<img src="' + img + '" alt="' + p.name + '" loading="lazy">'
+             +    '<div class="nm">' + p.name + '</div>'
+             +    '<div class="pr">\u00a5' + price.toLocaleString('ja-JP') + '</div>'
+             +    '<div class="nt">' + note + '</div>'
+             +    '<a href="' + p.permalink + '" class="btn">\u8cfc\u5165\u3059\u308b \u2192</a>'
+             +  '</div>';
+      });
+      if (html) box.innerHTML = html;
+    })
+    .catch(function () { /* 失敗時はHTMLの内容をそのまま使う */ });
+})();
+</script>
 </body></html>
