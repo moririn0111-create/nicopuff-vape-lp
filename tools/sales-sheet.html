@@ -1,0 +1,987 @@
+<title>VAPE MAFIA 売上台帳</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+:root{
+  --bg:#f5f2ea; --surface:#fffdf7; --surface2:#efeade; --sunk:#e9e3d4;
+  --text:#191922; --muted:#6b6a7c; --faint:#8d8c9d;
+  --line:rgba(25,25,34,.14); --line2:rgba(25,25,34,.07);
+  --accent:#8f6f18; --accent-mark:#a8811c; --series2:#1b5fd4;
+  --good:#1e7a4f; --bad:#b32d22; --warn:#8a5a10;
+  --chip:#fffdf7; --shadow:0 1px 2px rgba(25,25,34,.06);
+  --display:"Zen Kaku Gothic New","Noto Sans JP",system-ui,sans-serif;
+  --body:"Noto Sans JP",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e0e14; --surface:#16161e; --surface2:#1d1d27; --sunk:#101017;
+  --text:#eae7dd; --muted:#9695a8; --faint:#7d7c8e;
+  --line:rgba(234,231,221,.15); --line2:rgba(234,231,221,.07);
+  --accent:#c9a84c; --accent-mark:#b08c34; --series2:#5c82db;
+  --warn:#d3a44e;
+  --chip:#1d1d27; --shadow:0 1px 2px rgba(0,0,0,.4);
+}}
+:root[data-theme="dark"]{
+  --bg:#0e0e14; --surface:#16161e; --surface2:#1d1d27; --sunk:#101017;
+  --text:#eae7dd; --muted:#9695a8; --faint:#7d7c8e;
+  --line:rgba(234,231,221,.15); --line2:rgba(234,231,221,.07);
+  --accent:#c9a84c; --accent-mark:#b08c34; --series2:#5c82db;
+  --good:#4fb383; --bad:#e0685c; --warn:#d3a44e;
+  --chip:#1d1d27; --shadow:0 1px 2px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:14px;line-height:1.6;
+  -webkit-text-size-adjust:100%;padding-bottom:64px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ── top bar ─────────────────────────────── */
+.topbar{border-bottom:1px solid var(--line);background:var(--surface);position:sticky;top:0;z-index:30}
+.topbar .wrap{display:flex;align-items:center;gap:14px;min-height:60px;flex-wrap:wrap}
+.brand{font-family:var(--display);font-weight:900;letter-spacing:.14em;font-size:15px;display:flex;align-items:baseline;gap:10px}
+.brand b{color:var(--accent)}
+.brand span{font-weight:500;letter-spacing:.22em;font-size:11px;color:var(--muted)}
+.spacer{flex:1}
+.sync{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--muted);letter-spacing:.04em}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--faint);flex:none}
+.dot.on{background:var(--good)}.dot.local{background:var(--warn)}
+.tbtn{background:none;border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:12px;cursor:pointer;color:var(--muted)}
+.tbtn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ── month rail ──────────────────────────── */
+.rail{border-bottom:1px solid var(--line);background:var(--bg);position:sticky;top:60px;z-index:20}
+@media(max-width:700px){.rail{position:static}}
+.rail .wrap{display:flex;gap:0;overflow-x:auto;scrollbar-width:thin}
+.mchip{flex:none;border:0;background:none;padding:11px 15px 9px;cursor:pointer;text-align:left;
+  border-bottom:2px solid transparent;color:var(--muted);white-space:nowrap}
+.mchip .my{display:block;font-size:10px;letter-spacing:.12em;color:var(--faint)}
+.mchip .mm{font-family:var(--display);font-weight:700;font-size:14px}
+.mchip .mv{display:block;font-family:var(--mono);font-size:11px;font-variant-numeric:tabular-nums}
+.mchip:hover{color:var(--text)}
+.mchip[aria-current="true"]{color:var(--text);border-bottom-color:var(--accent)}
+.mchip[aria-current="true"] .mv{color:var(--accent)}
+
+/* ── ledger strip ────────────────────────── */
+.ledger{display:grid;grid-template-columns:repeat(5,1fr);background:var(--surface);
+  border:1px solid var(--line);border-radius:2px;margin-top:20px;box-shadow:var(--shadow)}
+.lc{padding:14px 16px;border-left:1px solid var(--line2);min-width:0}
+.lc:first-child{border-left:0}
+.lc .k{font-size:10.5px;letter-spacing:.16em;color:var(--muted);white-space:nowrap}
+.lc .v{font-family:var(--mono);font-weight:600;font-size:20px;font-variant-numeric:tabular-nums;
+  letter-spacing:-.02em;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lc .d{font-size:11px;color:var(--muted);font-family:var(--mono)}
+.lc.hero{background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 9%,transparent),transparent)}
+.lc.hero .v{color:var(--accent);font-size:23px}
+.up{color:var(--good)}.down{color:var(--bad)}
+@media(max-width:820px){.ledger{grid-template-columns:repeat(2,1fr)}
+  .lc{border-top:1px solid var(--line2)}.lc:nth-child(-n+2){border-top:0}.lc:nth-child(odd){border-left:0}
+  .lc.hero{grid-column:1/-1}}
+
+/* ── charts ──────────────────────────────── */
+.charts{display:grid;grid-template-columns:1.35fr 1fr;gap:14px;margin-top:14px}
+@media(max-width:820px){.charts{grid-template-columns:1fr}}
+figure.card{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:2px;padding:14px 16px 10px;box-shadow:var(--shadow);position:relative}
+figure.card figcaption{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+figcaption h2{font-size:12.5px;font-weight:700;letter-spacing:.1em}
+.legend{display:flex;gap:12px;font-size:11px;color:var(--muted)}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:baseline}
+.chartbox{position:relative;width:100%}
+.chartbox svg{display:block;width:100%;height:auto;overflow:visible}
+.tip{position:absolute;pointer-events:none;opacity:0;transform:translate(-50%,-118%);
+  background:var(--text);color:var(--bg);padding:6px 9px;border-radius:3px;font-size:11.5px;
+  white-space:nowrap;z-index:5;font-family:var(--mono);line-height:1.5}
+.tip.show{opacity:1}
+.tip b{color:var(--bg);font-weight:600}
+
+/* ── tabs ────────────────────────────────── */
+.tabs{display:flex;gap:2px;margin:22px 0 0;border-bottom:1px solid var(--line);overflow-x:auto}
+.tab{border:0;background:none;padding:10px 15px;cursor:pointer;color:var(--muted);font-weight:500;
+  border-bottom:2px solid transparent;white-space:nowrap;font-size:13px}
+.tab[aria-selected="true"]{color:var(--text);border-bottom-color:var(--accent);font-weight:700}
+.panel{padding-top:18px}
+.panel[hidden]{display:none}
+
+/* ── tables ──────────────────────────────── */
+.tblbox{overflow-x:auto;border:1px solid var(--line);border-radius:2px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{font-size:10.5px;letter-spacing:.12em;color:var(--muted);font-weight:700;text-align:left;
+  padding:9px 12px;border-bottom:1px solid var(--line);white-space:nowrap;background:var(--surface2)}
+td{padding:8px 12px;border-bottom:1px solid var(--line2);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+tbody tr:hover{background:var(--surface2)}
+td.num,th.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+tfoot td{border-top:1px solid var(--line);font-weight:700;background:var(--surface2)}
+.src{font-size:10px;letter-spacing:.08em;padding:2px 7px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.src.stripe{border-color:color-mix(in srgb,var(--series2) 55%,transparent);color:var(--series2)}
+.src.woo{border-color:color-mix(in srgb,var(--accent) 60%,transparent);color:var(--accent)}
+.rowbtn{border:0;background:none;color:var(--faint);cursor:pointer;padding:2px 6px;border-radius:3px}
+.rowbtn:hover{color:var(--bad);background:var(--surface2)}
+.dup td{opacity:.45;text-decoration:line-through}
+
+/* ── forms ───────────────────────────────── */
+.form{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;background:var(--surface);
+  border:1px solid var(--line);border-radius:2px;padding:14px 16px;margin-bottom:14px}
+.f{display:flex;flex-direction:column;gap:4px;min-width:0}
+.f label{font-size:10.5px;letter-spacing:.12em;color:var(--muted)}
+.f input,.f select,.f textarea{background:var(--bg);border:1px solid var(--line);border-radius:2px;
+  padding:8px 10px;font-size:13px;min-width:0;width:100%}
+.f.grow{flex:1;min-width:160px}
+@media(max-width:640px){.form{gap:9px 10px}.f{flex:1 1 132px}.form .btn{flex:1 1 100%}}
+.f input[type=number]{font-family:var(--mono);text-align:right}
+.btn{background:var(--accent);color:var(--surface);border:0;border-radius:2px;padding:9px 18px;
+  font-weight:700;cursor:pointer;font-size:13px;letter-spacing:.04em}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:none;color:var(--accent);border:1px solid var(--accent)}
+.btn.quiet{background:none;color:var(--muted);border:1px solid var(--line)}
+.btn.quiet:hover{color:var(--text);border-color:var(--muted);filter:none}
+.btn:disabled{opacity:.4;cursor:not-allowed;filter:none}
+.hint{font-size:11.5px;color:var(--muted);line-height:1.7}
+.sec{margin-top:26px}
+.sec>h3{font-size:12px;letter-spacing:.14em;color:var(--muted);font-weight:700;
+  padding-bottom:7px;border-bottom:1px solid var(--line);margin-bottom:12px}
+
+/* ── expenses ────────────────────────────── */
+.shot{display:flex;align-items:center;gap:10px}
+.shotbtn{border:1px dashed var(--line);border-radius:2px;padding:9px 14px;cursor:pointer;
+  color:var(--muted);background:var(--bg);font-size:12.5px;display:inline-flex;gap:7px;align-items:center}
+.shotbtn:hover{border-color:var(--accent);color:var(--accent)}
+.thumb{width:44px;height:44px;object-fit:cover;border-radius:2px;border:1px solid var(--line);cursor:zoom-in;display:block;background:var(--surface2)}
+.exlist{display:grid;gap:1px;background:var(--line2);border:1px solid var(--line);border-radius:2px}
+.ex{display:grid;grid-template-columns:50px auto minmax(0,1fr) auto 44px 28px;gap:12px;align-items:center;
+  background:var(--surface);padding:10px 14px}
+.ex .d{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.ex .cat{font-size:11px;letter-spacing:.06em;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:1px 8px;justify-self:start}
+.ex .n{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ex .a{font-family:var(--mono);font-weight:600;font-variant-numeric:tabular-nums}
+@media(max-width:640px){.ex{grid-template-columns:auto minmax(0,1fr) auto 44px 28px;gap:9px;row-gap:2px}
+  .ex .d{grid-column:1/-1;font-size:11px}}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.86);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+.lightbox.on{display:flex}
+.lightbox img{max-width:100%;max-height:92vh;border-radius:3px}
+
+/* ── import ──────────────────────────────── */
+.drop{border:1px dashed var(--line);border-radius:2px;padding:26px 20px;text-align:center;background:var(--surface);cursor:pointer}
+.drop.over{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 7%,var(--surface))}
+.drop strong{font-family:var(--display);font-size:15px;display:block;margin-bottom:4px}
+.maps{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+.stats{display:flex;gap:8px;flex-wrap:wrap}
+.stat{border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:12px;cursor:pointer;background:var(--surface);display:flex;gap:7px;align-items:center}
+.stat[aria-pressed="true"]{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,var(--surface))}
+.stat em{font-style:normal;font-family:var(--mono);color:var(--faint);font-size:11px}
+.note{border-left:2px solid var(--accent);background:var(--surface);padding:10px 14px;font-size:12.5px;color:var(--muted);border-radius:0 2px 2px 0}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--text);
+  color:var(--bg);padding:11px 20px;border-radius:3px;font-size:13px;opacity:0;pointer-events:none;
+  transition:opacity .2s,transform .2s;z-index:200;max-width:90vw;text-align:center}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.empty{padding:34px 16px;text-align:center;color:var(--muted);font-size:13px;white-space:normal}
+</style>
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="brand"><b>VAPE MAFIA</b><span>売上台帳</span></div>
+    <div class="spacer"></div>
+    <div class="sync"><span class="dot" id="dot"></span><span id="syncTxt">接続中…</span></div>
+    <button class="tbtn" id="themeBtn" type="button">表示</button>
+  </div>
+</header>
+
+<nav class="rail" aria-label="月の切り替え"><div class="wrap" id="rail"></div></nav>
+
+<div class="wrap">
+  <section class="ledger" id="ledger" aria-label="月次サマリー"></section>
+
+  <div class="charts">
+    <figure class="card">
+      <figcaption>
+        <h2>月次推移</h2>
+        <div class="legend">
+          <span><i style="background:var(--accent-mark)"></i>売上</span>
+          <span><i style="background:var(--series2)"></i>営業利益</span>
+        </div>
+      </figcaption>
+      <div class="chartbox" id="trendBox"><div class="tip" id="trendTip"></div></div>
+    </figure>
+    <figure class="card">
+      <figcaption><h2 id="dailyTitle">日別売上</h2><span class="legend" id="dailyMeta"></span></figcaption>
+      <div class="chartbox" id="dailyBox"><div class="tip" id="dailyTip"></div></div>
+    </figure>
+  </div>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab" role="tab" data-p="sales" aria-selected="true">売上明細</button>
+    <button class="tab" role="tab" data-p="exp" aria-selected="false">経費・領収書</button>
+    <button class="tab" role="tab" data-p="imp" aria-selected="false">Stripe / Woo 取り込み</button>
+    <button class="tab" role="tab" data-p="set" aria-selected="false">設定・書き出し</button>
+  </nav>
+
+  <!-- 売上明細 -->
+  <section class="panel" id="p-sales" role="tabpanel">
+    <form class="form" id="saleForm">
+      <div class="f"><label for="s-date">日付</label><input type="date" id="s-date" required></div>
+      <div class="f"><label for="s-amt">売上（円）</label><input type="number" id="s-amt" inputmode="numeric" step="1" required placeholder="8500"></div>
+      <div class="f"><label for="s-cost">原価（円）</label><input type="number" id="s-cost" inputmode="numeric" step="1" placeholder="自動"></div>
+      <div class="f"><label for="s-fee">決済手数料（円）</label><input type="number" id="s-fee" inputmode="numeric" step="1" placeholder="自動"></div>
+      <div class="f grow"><label for="s-note">メモ</label><input type="text" id="s-note" placeholder="注文番号・商品名など"></div>
+      <button class="btn" type="submit">売上を追加</button>
+    </form>
+    <div class="tblbox"><table id="salesTbl"></table></div>
+    <p class="hint" style="margin-top:8px">原価・手数料を空欄にすると、設定の原価率／手数料率から自動計算します。金額のセルはそのままクリックして直接編集できます。<br>「手数料等」は決済手数料のほか値引きなどの差額も含みます（旧シートの行は、記録されていた利益から逆算した額です）。ソースのラベルを押すと、その行を集計から外す／戻すが切り替わります。</p>
+  </section>
+
+  <!-- 経費 -->
+  <section class="panel" id="p-exp" role="tabpanel" hidden>
+    <form class="form" id="expForm">
+      <div class="f"><label for="e-date">日付</label><input type="date" id="e-date" required></div>
+      <div class="f"><label for="e-cat">科目</label>
+        <select id="e-cat">
+          <option>仕入れ</option><option>広告費</option><option>通信・サーバー</option>
+          <option>荷造・発送</option><option>消耗品</option><option>交際・会議</option>
+          <option>交通費</option><option>手数料</option><option>その他</option>
+        </select></div>
+      <div class="f"><label for="e-amt">金額（円）</label><input type="number" id="e-amt" inputmode="numeric" step="1" required placeholder="4950"></div>
+      <div class="f grow"><label for="e-note">内容メモ</label><input type="text" id="e-note" placeholder="何に使ったか"></div>
+      <div class="f"><label>領収書</label>
+        <div class="shot">
+          <label class="shotbtn" for="e-shot">写真を撮る / 選ぶ</label>
+          <input type="file" id="e-shot" accept="image/*" capture="environment" hidden>
+          <img class="thumb" id="e-thumb" alt="" hidden>
+        </div>
+      </div>
+      <button class="btn" type="submit">経費を記録</button>
+    </form>
+    <p class="hint" id="shotHint" style="margin:-6px 0 14px">スマホなら「写真を撮る」でその場でレシートを撮影 → そのまま記録されます。画像は自動で圧縮して保存します。</p>
+    <div class="sec"><h3 id="expTitle">この月の経費</h3><div class="exlist" id="expList"></div></div>
+  </section>
+
+  <!-- 取り込み -->
+  <section class="panel" id="p-imp" role="tabpanel" hidden>
+    <p class="note">Stripe は「支払い」画面の <b>CSVエクスポート</b>、WooCommerce は注文一覧の <b>CSVエクスポート</b> をそのまま読み込めます。列名は自動で判定し、違っていれば下で選び直せます。<b>同じ注文が両方に出る分は自動で重複扱い</b>にして二重計上を防ぎます。</p>
+    <div class="form" style="margin-top:14px">
+      <div class="f"><label for="i-src">取り込み元</label>
+        <select id="i-src"><option value="stripe">Stripe</option><option value="woo">WooCommerce</option><option value="other">その他CSV</option></select></div>
+      <div class="f grow"><label>CSVファイル</label>
+        <div class="drop" id="drop"><strong>CSVをここにドロップ</strong><span class="hint">またはクリックしてファイルを選択</span></div>
+        <input type="file" id="csvFile" accept=".csv,text/csv" hidden>
+      </div>
+    </div>
+    <div id="impResult"></div>
+  </section>
+
+  <!-- 設定 -->
+  <section class="panel" id="p-set" role="tabpanel" hidden>
+    <div class="sec"><h3>自動計算のルール</h3>
+      <div class="form">
+        <div class="f"><label for="cf-cost">原価率（%）</label><input type="number" id="cf-cost" step="0.1" inputmode="decimal"></div>
+        <div class="f"><label for="cf-fee">決済手数料率（%）</label><input type="number" id="cf-fee" step="0.1" inputmode="decimal"></div>
+        <div class="f grow"><span class="hint">取り込みや新規入力で原価・手数料が空のとき、この率で自動計算します。旧シートの実績（原価 約21%／Stripe 3.6%）を初期値にしています。既存の行は書き換えません。</span></div>
+        <button class="btn" type="button" id="saveCfg">保存</button>
+      </div>
+    </div>
+    <div class="sec"><h3>書き出し</h3>
+      <div class="form">
+        <button class="btn ghost" type="button" id="expMonthCsv">この月のCSV</button>
+        <button class="btn ghost" type="button" id="expAllCsv">全期間のCSV</button>
+        <button class="btn ghost" type="button" id="expJson">バックアップ（JSON）</button>
+        <div class="f grow"><span class="hint">CSVはExcel／Googleスプレッドシートでそのまま開けます（BOM付きUTF-8）。JSONは領収書画像も含めた完全バックアップです。</span></div>
+      </div>
+    </div>
+    <div class="sec"><h3>読み込み・削除</h3>
+      <div class="form">
+        <label class="btn quiet" for="jsonFile" style="cursor:pointer">バックアップを復元</label>
+        <input type="file" id="jsonFile" accept=".json,application/json" hidden>
+        <div class="f grow"><span class="hint">復元は同じIDの行を上書きします。行の削除は各一覧の「×」から行ってください。</span></div>
+      </div>
+    </div>
+    <div class="sec"><h3>保存先</h3><p class="hint" id="storeInfo"></p></div>
+  </section>
+</div>
+
+<div class="lightbox" id="lightbox"><img id="lightboxImg" alt="領収書"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<style>
+.cell{width:88px;background:transparent;border:1px solid transparent;border-radius:2px;padding:3px 5px;
+  text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:13px}
+.cell:hover{border-color:var(--line)}
+.cell:focus{border-color:var(--accent);background:var(--bg)}
+.noteCell{width:100%;min-width:130px;background:transparent;border:1px solid transparent;border-radius:2px;padding:3px 5px;font-size:13px}
+.noteCell:hover{border-color:var(--line)}
+.noteCell:focus{border-color:var(--accent);background:var(--bg)}
+.prev{max-height:260px;overflow:auto;border:1px solid var(--line);border-radius:2px}
+.prev table{font-size:12px}
+</style>
+
+<script>
+(function(){
+"use strict";
+const LS = "vm-ledger-v1";
+const $  = (s,r)=> (r||document).querySelector(s);
+const $$ = (s,r)=> Array.from((r||document).querySelectorAll(s));
+const CAT = ["仕入れ","広告費","通信・サーバー","荷造・発送","消耗品","交際・会議","交通費","手数料","その他"];
+
+const S = { sales:{}, expenses:{}, cfg:{costRate:21, feeRate:3.6}, month:null, db:null, dl:null, mode:"local", pending:null };
+
+/* ── helpers ───────────────────────────── */
+const yen  = n => "¥" + Math.round(n||0).toLocaleString("ja-JP");
+const num  = n => Math.round(n||0).toLocaleString("ja-JP");
+const esc  = s => String(s==null?"":s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pad  = n => String(n).padStart(2,"0");
+const today= () => { const d=new Date(); return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); };
+const uid  = () => Math.random().toString(36).slice(2,8);
+const axisFmt = v => Math.abs(v) >= 10000 ? (v/10000).toFixed(Math.abs(v)>=100000?0:1).replace(/\.0$/,"")+"万" : num(v);
+function monthLabel(m){ const [y,mm]=m.split("-"); return {y:y, m:(+mm)+"月"}; }
+
+let toastT;
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("on");
+  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("on"), 2600); }
+
+function dbMsg(e){
+  const c = e && e.code;
+  if(c==="quota_exceeded") return "保存できる件数の上限に達しました。古いデータを削除してください。";
+  if(c==="invalid_argument") return "保存できませんでした（データが大きすぎる可能性があります）。";
+  if(c==="resource_exhausted") return "操作が多すぎます。少し待ってからもう一度お試しください。";
+  if(c==="revoked") return "このページの保存権限がなくなりました。再読み込みしてください。";
+  return "保存できませんでした。端末内には残っています。";
+}
+
+/* ── local cache ───────────────────────── */
+function loadCache(){
+  try{ const j=JSON.parse(localStorage.getItem(LS)||"{}");
+    if(j.sales) S.sales=j.sales; if(j.expenses) S.expenses=j.expenses;
+    if(j.cfg) S.cfg=Object.assign(S.cfg,j.cfg);
+  }catch(e){}
+}
+function saveCache(){
+  try{ localStorage.setItem(LS, JSON.stringify({sales:S.sales,expenses:S.expenses,cfg:S.cfg})); }
+  catch(e){
+    try{ const lean={}; for(const k in S.expenses){ lean[k]=Object.assign({},S.expenses[k],{receipt:""}); }
+      localStorage.setItem(LS, JSON.stringify({sales:S.sales,expenses:lean,cfg:S.cfg})); }catch(e2){}
+  }
+}
+
+/* ── storage ───────────────────────────── */
+function setSync(mode,msg){
+  S.mode=mode; const d=$("#dot"), t=$("#syncTxt");
+  d.className = "dot" + (mode==="cloud"?" on":mode==="local"?" local":"");
+  t.textContent = msg || (mode==="cloud" ? "同期中（どの端末からも同じデータ）" : "この端末に保存");
+  $("#storeInfo").textContent = mode==="cloud"
+    ? "クラウドに保存しています。スマホで撮った領収書もPCの一覧にそのまま出ます。念のため、月に一度はバックアップ（JSON）を取っておくと安心です。"
+    : "現在この端末のブラウザ内だけに保存しています（オフライン時やクラウド未接続時）。他の端末とは同期されないので、バックアップ（JSON）で移してください。";
+}
+
+async function initStore(){
+  let db=null, dl=null;
+  try{ if(window.claude && claude.use){ db = await claude.use("db"); } }catch(e){}
+  try{ if(window.claude && claude.use){ dl = await claude.use("downloads"); } }catch(e){}
+  S.dl = dl;
+  if(!db){ setSync("local"); return; }
+  S.db = db; setSync("cloud");
+  db.collection("sales").onSnapshot(snap=>{
+    const next={}; snap.docs.forEach(d=>{ next[d.id]=d.data(); });
+    S.sales=next; saveCache(); renderAll();
+  }, e=>{ setSync("local","同期が切れました（端末内に保存）"); });
+  db.collection("expenses").onSnapshot(snap=>{
+    const next={}; snap.docs.forEach(d=>{ next[d.id]=d.data(); });
+    S.expenses=next; saveCache(); renderAll();
+  }, e=>{});
+  db.doc("settings/app").onSnapshot(d=>{
+    if(d.exists){ S.cfg=Object.assign(S.cfg,d.data()); fillCfg(); saveCache(); }
+  }, e=>{});
+}
+
+async function put(coll,id,rec){
+  (coll==="sales"?S.sales:S.expenses)[id]=rec; saveCache(); renderAll();
+  if(S.db){ try{ await S.db.doc(coll+"/"+id).set(rec); }catch(e){ toast(dbMsg(e)); } }
+}
+async function remove(coll,id){
+  delete (coll==="sales"?S.sales:S.expenses)[id]; saveCache(); renderAll();
+  if(S.db){ try{ await S.db.doc(coll+"/"+id).delete(); }catch(e){ toast(dbMsg(e)); } }
+}
+async function putMany(coll,items){
+  const target = coll==="sales"?S.sales:S.expenses;
+  items.forEach(it=>{ target[it.id]=it.rec; });
+  saveCache(); renderAll();
+  if(!S.db) return;
+  for(const it of items){
+    try{ await S.db.doc(coll+"/"+it.id).set(it.rec); }
+    catch(e){ toast(dbMsg(e)); break; }
+  }
+}
+async function saveCfg(){
+  saveCache();
+  if(S.db){ try{ await S.db.doc("settings/app").set(S.cfg); }catch(e){ toast(dbMsg(e)); } }
+}
+
+/* ── aggregation ───────────────────────── */
+function months(){
+  const set=new Set();
+  Object.values(S.sales).forEach(r=>r.date&&set.add(r.date.slice(0,7)));
+  Object.values(S.expenses).forEach(r=>r.date&&set.add(r.date.slice(0,7)));
+  set.add(today().slice(0,7));
+  return Array.from(set).sort();
+}
+function agg(m){
+  let amount=0,cost=0,fee=0,exp=0,n=0;
+  for(const r of Object.values(S.sales)){
+    if(r.dup || (r.date||"").slice(0,7)!==m) continue;
+    amount+=+r.amount||0; cost+=+r.cost||0; fee+=+r.fee||0; n++;
+  }
+  for(const r of Object.values(S.expenses)) if((r.date||"").slice(0,7)===m) exp+=+r.amount||0;
+  return {m,amount,cost,fee,exp,n,gross:amount-cost-fee,op:amount-cost-fee-exp};
+}
+function salesOf(m){
+  return Object.entries(S.sales).filter(([,r])=>(r.date||"").slice(0,7)===m)
+    .map(([id,r])=>Object.assign({id},r)).sort((a,b)=> a.date===b.date ? (a.id<b.id?-1:1) : (a.date<b.date?-1:1));
+}
+function expensesOf(m){
+  return Object.entries(S.expenses).filter(([,r])=>(r.date||"").slice(0,7)===m)
+    .map(([id,r])=>Object.assign({id},r)).sort((a,b)=> a.date<b.date?1:-1);
+}
+
+/* ── charts ────────────────────────────── */
+const SVGNS="http://www.w3.org/2000/svg";
+function el(n,a){ const e=document.createElementNS(SVGNS,n); for(const k in a) e.setAttribute(k,a[k]); return e; }
+function niceMax(v){
+  if(v<=0) return 1000;
+  const mag=Math.pow(10,Math.floor(Math.log10(v)));
+  return Math.ceil(v/(mag/2))*(mag/2);
+}
+function showTip(tipEl,box,x,y,html){
+  tipEl.innerHTML=html;
+  tipEl.style.left=Math.max(60,Math.min(box.clientWidth-60,x))+"px";
+  tipEl.style.top=y+"px"; tipEl.classList.add("show");
+}
+
+function drawTrend(){
+  const box=$("#trendBox"), tip=$("#trendTip");
+  Array.from(box.querySelectorAll("svg")).forEach(n=>n.remove());
+  const data=months().map(agg).filter(d=>d.amount||d.exp);
+  const W=Math.max(320,box.clientWidth), H=196, P={t:12,r:10,b:26,l:44};
+  const svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"月別の売上と営業利益の推移"});
+  svg.setAttribute("style","color:var(--muted)");
+  if(!data.length){ box.appendChild(svg); return; }
+  const pw=W-P.l-P.r, ph=H-P.t-P.b;
+  const hi=niceMax(Math.max.apply(null,data.map(d=>Math.max(d.amount,d.op))));
+  const lo=Math.min(0,Math.min.apply(null,data.map(d=>d.op)));
+  const loN=lo<0?-niceMax(-lo):0;
+  const Y=v=>P.t+ph-((v-loN)/(hi-loN))*ph;
+  [loN, (loN+hi)/2, hi].forEach(v=>{
+    svg.appendChild(el("line",{x1:P.l,x2:W-P.r,y1:Y(v),y2:Y(v),stroke:"currentColor","stroke-opacity":v===0?.34:.14,"stroke-width":1}));
+    const t=el("text",{x:P.l-7,y:Y(v)+4,"text-anchor":"end","font-size":10,fill:"currentColor","font-family":"var(--mono)"});
+    t.textContent=axisFmt(v); svg.appendChild(t);
+  });
+  const gw=pw/data.length, bw=Math.min(15,gw*0.3), gap=Math.max(2,bw*0.16);
+  data.forEach((d,i)=>{
+    const cx=P.l+gw*i+gw/2;
+    [[d.amount,"var(--accent-mark)",-1],[d.op,"var(--series2)",1]].forEach(([v,c,side])=>{
+      const x=cx+(side<0?-bw-gap/2:gap/2), y0=Y(0), y1=Y(v);
+      svg.appendChild(el("rect",{x:x,y:Math.min(y0,y1),width:bw,height:Math.max(1.5,Math.abs(y1-y0)),
+        fill:c,rx:Math.min(3,bw/2)}));
+    });
+    const lab=el("text",{x:cx,y:H-9,"text-anchor":"middle","font-size":10.5,fill:"currentColor"});
+    lab.textContent=monthLabel(d.m).m; svg.appendChild(lab);
+    if(d.m===S.month) lab.setAttribute("font-weight","700");
+    const hit=el("rect",{x:P.l+gw*i,y:P.t,width:gw,height:ph,fill:"transparent"});
+    hit.addEventListener("pointerenter",()=>showTip(tip,box,P.l+gw*i+gw/2,Y(Math.max(d.amount,d.op))-4,
+      monthLabel(d.m).y+"年"+monthLabel(d.m).m+"<br>売上 <b>"+yen(d.amount)+"</b><br>営業利益 <b>"+yen(d.op)+"</b><br>件数 "+d.n+"件"));
+    hit.addEventListener("pointerleave",()=>tip.classList.remove("show"));
+    hit.addEventListener("click",()=>{ S.month=d.m; renderAll(); });
+    hit.style.cursor="pointer";
+    svg.appendChild(hit);
+  });
+  const last=data[data.length-1];
+  const lt=el("text",{x:P.l+gw*(data.length-1)+gw/2-bw/2-gap/2,y:Y(last.amount)-6,"text-anchor":"middle",
+    "font-size":10.5,"font-weight":"600",fill:"currentColor","font-family":"var(--mono)"});
+  lt.textContent=axisFmt(last.amount); svg.appendChild(lt);
+  box.appendChild(svg);
+}
+
+function drawDaily(){
+  if(!S.month) return;
+  const box=$("#dailyBox"), tip=$("#dailyTip");
+  Array.from(box.querySelectorAll("svg")).forEach(n=>n.remove());
+  const m=S.month, [y,mm]=m.split("-").map(Number), days=new Date(y,mm,0).getDate();
+  const byDay=new Array(days+1).fill(0), gross=new Array(days+1).fill(0), ex=new Array(days+1).fill(0);
+  salesOf(m).forEach(r=>{ if(r.dup) return; const d=+r.date.slice(8);
+    byDay[d]+=+r.amount||0; gross[d]+=(+r.amount||0)-(+r.cost||0)-(+r.fee||0); });
+  expensesOf(m).forEach(r=>{ ex[+r.date.slice(8)]+=+r.amount||0; });
+  const W=Math.max(280,box.clientWidth), H=196, P={t:12,r:8,b:26,l:44};
+  const svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"日別の売上"});
+  svg.setAttribute("style","color:var(--muted)");
+  const a0=agg(m), best0=byDay.indexOf(Math.max.apply(null,byDay));
+  $("#dailyTitle").textContent=(+mm)+"月の日別売上";
+  $("#dailyMeta").innerHTML = a0.n
+    ? "<span>"+a0.n+"件 ・ 平均 "+yen(a0.amount/a0.n)+" ・ 最高 "+mm+"/"+best0+"</span>"
+      + (expensesOf(m).length?"<span><i style=\"background:var(--bad)\"></i>経費あり</span>":"")
+    : "<span>まだ記録がありません</span>";
+  if(!a0.n && !a0.exp){
+    const t=el("text",{x:W/2,y:H/2,"text-anchor":"middle","font-size":12.5,fill:"currentColor"});
+    t.textContent="この月の記録はまだありません";
+    svg.appendChild(t); box.appendChild(svg); return;
+  }
+  const pw=W-P.l-P.r, ph=H-P.t-P.b;
+  const hi=niceMax(Math.max(1,Math.max.apply(null,byDay)));
+  const Y=v=>P.t+ph-(v/hi)*ph;
+  [0,hi/2,hi].forEach(v=>{
+    svg.appendChild(el("line",{x1:P.l,x2:W-P.r,y1:Y(v),y2:Y(v),stroke:"currentColor","stroke-opacity":v===0?.34:.14,"stroke-width":1}));
+    const t=el("text",{x:P.l-7,y:Y(v)+4,"text-anchor":"end","font-size":10,fill:"currentColor","font-family":"var(--mono)"});
+    t.textContent=axisFmt(v); svg.appendChild(t);
+  });
+  const gw=pw/days, bw=Math.max(2.5,Math.min(13,gw-3));
+  for(let d=1;d<=days;d++){
+    const cx=P.l+gw*(d-1)+gw/2;
+    if(byDay[d]>0) svg.appendChild(el("rect",{x:cx-bw/2,y:Y(byDay[d]),width:bw,
+      height:Math.max(1.5,ph-(Y(byDay[d])-P.t)),fill:"var(--accent-mark)",rx:Math.min(3,bw/2)}));
+    if(ex[d]>0) svg.appendChild(el("rect",{x:cx-bw/2,y:P.t+ph+3,width:bw,height:3,fill:"var(--bad)",rx:1.5}));
+    if(d===1||d%5===0||d===days){
+      const t=el("text",{x:cx,y:H-9,"text-anchor":"middle","font-size":10,fill:"currentColor"});
+      t.textContent=d; svg.appendChild(t);
+    }
+    const hit=el("rect",{x:P.l+gw*(d-1),y:P.t,width:gw,height:ph+8,fill:"transparent"});
+    hit.addEventListener("pointerenter",()=>showTip(tip,box,cx,Y(byDay[d])-4,
+      mm+"/"+d+"<br>売上 <b>"+yen(byDay[d])+"</b><br>粗利 <b>"+yen(gross[d])+"</b>"+(ex[d]?"<br>経費 <b>"+yen(ex[d])+"</b>":"")));
+    hit.addEventListener("pointerleave",()=>tip.classList.remove("show"));
+    svg.appendChild(hit);
+  }
+  box.appendChild(svg);
+}
+
+/* ── render ────────────────────────────── */
+function renderRail(){
+  const rail=$("#rail"), ms=months();
+  if(!S.month || ms.indexOf(S.month)<0){
+    const withData=ms.filter(m=>{ const a=agg(m); return a.amount||a.exp; });
+    S.month = withData.length ? withData[withData.length-1] : ms[ms.length-1];
+  }
+  rail.innerHTML = ms.map(m=>{
+    const a=agg(m), L=monthLabel(m);
+    return '<button class="mchip" type="button" data-m="'+m+'" aria-current="'+(m===S.month)+'">'
+      + '<span class="my">'+L.y+'</span><span class="mm">'+L.m+'</span>'
+      + '<span class="mv">'+(a.amount?axisFmt(a.amount):"—")+'</span></button>';
+  }).join("");
+  $$(".mchip",rail).forEach(b=>b.addEventListener("click",()=>{ S.month=b.dataset.m; renderAll();
+    b.scrollIntoView({block:"nearest",inline:"center",behavior:"smooth"}); }));
+  const cur=rail.querySelector('[aria-current="true"]');
+  if(cur) cur.scrollIntoView({block:"nearest",inline:"center"});
+}
+
+function renderLedger(){
+  if(!S.month) return;
+  const ms=months(), i=ms.indexOf(S.month), a=agg(S.month);
+  const p = i>0 ? agg(ms[i-1]) : null;
+  const delta=(cur,prev,goodUp)=>{
+    if(!p || !prev) return '<span class="d">&nbsp;</span>';
+    const r=(cur-prev)/Math.abs(prev)*100, up=r>=0;
+    const cls = goodUp===false ? (up?"down":"up") : (up?"up":"down");
+    return '<span class="d '+cls+'">'+(up?"▲":"▼")+Math.abs(r).toFixed(0)+"% <span style=\"color:var(--faint)\">前月比</span></span>";
+  };
+  $("#ledger").innerHTML =
+    cell("売上", yen(a.amount), delta(a.amount,p&&p.amount,true)) +
+    cell("原価", yen(a.cost), delta(a.cost,p&&p.cost,false)) +
+    cell("手数料等", yen(a.fee), '<span class="d">'+(a.amount?(a.fee/a.amount*100).toFixed(1):"0.0")+"% / 売上</span>") +
+    cell("経費", yen(a.exp), delta(a.exp,p&&p.exp,false)) +
+    cell("営業利益", yen(a.op), '<span class="d">利益率 '+(a.amount?(a.op/a.amount*100).toFixed(1):"0.0")+"%</span>", true);
+  function cell(k,v,d,hero){ return '<div class="lc'+(hero?" hero":"")+'"><div class="k">'+k+'</div><div class="v">'+v+"</div>"+d+"</div>"; }
+}
+
+function renderSales(){
+  if(!S.month) return;
+  const rows=salesOf(S.month), a=agg(S.month);
+  const head='<thead><tr><th>日付</th><th class="num">売上</th><th class="num">原価</th><th class="num">手数料等</th>'
+    +'<th class="num">粗利</th><th>ソース</th><th>メモ</th><th></th></tr></thead>';
+  if(!rows.length){ $("#salesTbl").innerHTML=head+'<tbody><tr><td colspan="8"><div class="empty">この月の売上はまだありません。上のフォームか「Stripe / Woo 取り込み」から追加してください。</div></td></tr></tbody>'; return; }
+  const body=rows.map(r=>{
+    const g=(+r.amount||0)-(+r.cost||0)-(+r.fee||0);
+    const sc={stripe:"stripe",woo:"woo"}[r.source]||"";
+    const lbl={stripe:"Stripe",woo:"Woo",legacy:"旧シート",manual:"手入力"}[r.source]||"手入力";
+    return '<tr class="'+(r.dup?"dup":"")+'" data-id="'+r.id+'">'
+      +"<td>"+r.date.slice(5).replace("-","/")+"</td>"
+      +'<td class="num"><input class="cell" type="number" step="1" data-k="amount" value="'+(+r.amount||0)+'"></td>'
+      +'<td class="num"><input class="cell" type="number" step="1" data-k="cost" value="'+(+r.cost||0)+'"></td>'
+      +'<td class="num"><input class="cell" type="number" step="1" data-k="fee" value="'+(+r.fee||0)+'"></td>'
+      +'<td class="num">'+num(g)+"</td>"
+      +'<td><button class="src '+sc+'" type="button" data-dup="1" title="重複扱いを切り替え">'+lbl+(r.dup?" 重複":"")+"</button></td>"
+      +'<td><input class="noteCell" data-k="note" value="'+esc(r.note||"")+'"></td>'
+      +'<td><button class="rowbtn" type="button" data-del="1" aria-label="削除">×</button></td></tr>';
+  }).join("");
+  const foot='<tfoot><tr><td>合計</td><td class="num">'+num(a.amount)+'</td><td class="num">'+num(a.cost)
+    +'</td><td class="num">'+num(a.fee)+'</td><td class="num">'+num(a.gross)+'</td><td colspan="3"></td></tr></tfoot>';
+  $("#salesTbl").innerHTML=head+"<tbody>"+body+"</tbody>"+foot;
+}
+
+function renderExpenses(){
+  if(!S.month) return;
+  const rows=expensesOf(S.month), tot=rows.reduce((s,r)=>s+(+r.amount||0),0);
+  $("#expTitle").textContent = (+S.month.slice(5))+"月の経費 — "+rows.length+"件 / "+yen(tot);
+  $("#expList").innerHTML = rows.length ? rows.map(r=>
+    '<div class="ex" data-id="'+r.id+'">'
+    +'<div class="d">'+r.date.slice(5).replace("-","/")+"</div>"
+    +'<div class="cat">'+esc(r.category||"その他")+"</div>"
+    +'<div class="n">'+(esc(r.note||"")||'<span style="color:var(--faint)">（メモなし）</span>')+"</div>"
+    +'<div class="a">'+yen(r.amount)+"</div>"
+    +(r.receipt?'<img class="thumb" src="'+r.receipt+'" alt="領収書 '+r.date+'" data-zoom="1">':'<span style="color:var(--faint);font-size:11px">画像なし</span>')
+    +'<button class="rowbtn" type="button" data-del="1" aria-label="削除">×</button></div>').join("")
+    : '<div class="ex" style="display:block"><div class="empty">この月の経費はまだありません。上のフォームからレシートの写真つきで記録できます。</div></div>';
+}
+
+let raf;
+function renderAll(){
+  cancelAnimationFrame(raf);
+  raf=requestAnimationFrame(()=>{
+    renderRail(); renderLedger(); renderSales(); renderExpenses();
+    drawTrend(); drawDaily();
+  });
+}
+
+/* ── sales form & inline edit ──────────── */
+$("#saleForm").addEventListener("submit", async e=>{
+  e.preventDefault();
+  const date=$("#s-date").value, amount=+$("#s-amt").value||0;
+  if(!date||!amount){ toast("日付と売上を入力してください"); return; }
+  const cost = $("#s-cost").value===""? Math.round(amount*S.cfg.costRate/100) : +$("#s-cost").value;
+  const fee  = $("#s-fee").value===""?  Math.round(amount*S.cfg.feeRate/100)  : +$("#s-fee").value;
+  const id = date.replace(/-/g,"")+"-"+uid();
+  await put("sales", id, {date:date,amount:amount,cost:cost,fee:fee,note:$("#s-note").value.trim(),source:"manual",dup:false,ts:Date.now()});
+  S.month=date.slice(0,7);
+  $("#s-amt").value=""; $("#s-cost").value=""; $("#s-fee").value=""; $("#s-note").value="";
+  renderAll(); toast(yen(amount)+" の売上を記録しました");
+});
+
+$("#salesTbl").addEventListener("change", e=>{
+  const inp=e.target.closest("input[data-k]"); if(!inp) return;
+  const id=e.target.closest("tr").dataset.id, r=S.sales[id]; if(!r) return;
+  const k=inp.dataset.k, next=Object.assign({},r);
+  next[k] = k==="note" ? inp.value.trim() : (+inp.value||0);
+  put("sales",id,next);
+});
+$("#salesTbl").addEventListener("click", e=>{
+  const tr=e.target.closest("tr"); if(!tr) return;
+  const id=tr.dataset.id, r=S.sales[id]; if(!r) return;
+  if(e.target.closest("[data-del]")){
+    if(confirm(r.date+" の "+yen(r.amount)+" を削除しますか？")) remove("sales",id);
+  } else if(e.target.closest("[data-dup]")){
+    put("sales",id,Object.assign({},r,{dup:!r.dup}));
+    toast(r.dup?"集計に戻しました":"重複として集計から外しました");
+  }
+});
+
+/* ── expenses ──────────────────────────── */
+let shot="";
+async function compress(file){
+  let bmp;
+  try{ bmp=await createImageBitmap(file,{imageOrientation:"from-image"}); }
+  catch(e){ try{ bmp=await createImageBitmap(file); }catch(e2){ return ""; } }
+  let max=1400, url="";
+  for(let pass=0; pass<5; pass++){
+    let w=bmp.width, h=bmp.height;
+    if(Math.max(w,h)>max){ const k=max/Math.max(w,h); w=Math.round(w*k); h=Math.round(h*k); }
+    const c=document.createElement("canvas"); c.width=w; c.height=h;
+    const ctx=c.getContext("2d"); ctx.fillStyle="#fff"; ctx.fillRect(0,0,w,h); ctx.drawImage(bmp,0,0,w,h);
+    let q=0.72;
+    url=c.toDataURL("image/jpeg",q);
+    while(url.length>165000 && q>0.34){ q-=0.09; url=c.toDataURL("image/jpeg",q); }
+    if(url.length<=165000) break;
+    max=Math.round(max*0.78);
+  }
+  return url.length>200000 ? "" : url;
+}
+$("#e-shot").addEventListener("change", async e=>{
+  const f=e.target.files && e.target.files[0]; if(!f) return;
+  $("#shotHint").textContent="画像を処理しています…";
+  shot=await compress(f);
+  const th=$("#e-thumb");
+  if(shot){ th.src=shot; th.hidden=false; $("#shotHint").textContent="領収書を読み込みました（保存時に一緒に記録されます）"; }
+  else { th.hidden=true; $("#shotHint").textContent="この画像は保存できませんでした。もう一度撮り直してください。"; }
+});
+$("#expForm").addEventListener("submit", async e=>{
+  e.preventDefault();
+  const date=$("#e-date").value, amount=+$("#e-amt").value||0;
+  if(!date||!amount){ toast("日付と金額を入力してください"); return; }
+  const id=date.replace(/-/g,"")+"-"+uid();
+  await put("expenses", id, {date:date,category:$("#e-cat").value,amount:amount,
+    note:$("#e-note").value.trim(),receipt:shot,ts:Date.now()});
+  S.month=date.slice(0,7);
+  shot=""; $("#e-thumb").hidden=true; $("#e-amt").value=""; $("#e-note").value=""; $("#e-shot").value="";
+  $("#shotHint").textContent="スマホなら「写真を撮る」でその場でレシートを撮影 → そのまま記録されます。画像は自動で圧縮して保存します。";
+  renderAll(); toast(yen(amount)+" の経費を記録しました");
+});
+$("#expList").addEventListener("click", e=>{
+  const row=e.target.closest(".ex"); if(!row) return;
+  const id=row.dataset.id, r=S.expenses[id]; if(!r) return;
+  if(e.target.closest("[data-zoom]")){ $("#lightboxImg").src=r.receipt; $("#lightbox").classList.add("on"); }
+  else if(e.target.closest("[data-del]")){
+    if(confirm(r.date+" の "+yen(r.amount)+" を削除しますか？")) remove("expenses",id);
+  }
+});
+$("#lightbox").addEventListener("click",()=>$("#lightbox").classList.remove("on"));
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") $("#lightbox").classList.remove("on"); });
+
+/* ── CSV ───────────────────────────────── */
+function parseCsv(text){
+  if(text.charCodeAt(0)===0xFEFF) text=text.slice(1);
+  const rows=[]; let row=[], cur="", q=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(q){ if(c==='"'){ if(text[i+1]==='"'){cur+='"';i++;} else q=false; } else cur+=c; }
+    else if(c==='"') q=true;
+    else if(c===","){ row.push(cur); cur=""; }
+    else if(c==="\n"){ row.push(cur); cur=""; rows.push(row); row=[]; }
+    else if(c!=="\r") cur+=c;
+  }
+  if(cur!==""||row.length){ row.push(cur); rows.push(row); }
+  return rows.filter(r=>r.some(c=>String(c).trim()!==""));
+}
+const norm = s => String(s||"").toLowerCase().replace(/[\s_()\-]/g,"").replace(/[（）]/g,"");
+const SYN = {
+  date:["createdutc","created","createdat","date","orderdate","注文日","日付","作成日","決済日","購入日","dateutc","paidat","datecreated","createddate"],
+  amount:["amount","convertedamount","ordertotal","total","合計","合計金額","金額","売上","totalamount","小計","gross"],
+  fee:["fee","convertedfee","fees","手数料","stripefee","決済手数料"],
+  status:["status","orderstatus","状態","ステータス","注文状態","支払い状況","paymentstatus"],
+  ref:["id","orderid","ordernumber","注文番号","注文id","番号","chargeid","paymentintentid","paymentid","transactionid"],
+  refund:["amountrefunded","refunded","返金額","返金"]
+};
+function guess(headers,key){
+  const hs=headers.map(norm);
+  for(const w of SYN[key]){ const i=hs.indexOf(w); if(i>=0) return i; }
+  for(const w of SYN[key]){ const i=hs.findIndex(h=>h.indexOf(w)>=0); if(i>=0) return i; }
+  return -1;
+}
+function toNum(v){
+  const s=String(v==null?"":v).replace(/[¥￥,、\s]/g,"").replace(/jpy/ig,"");
+  const n=parseFloat(s); return isFinite(n)?n:0;
+}
+function toDate(v){
+  const s=String(v||"").trim();
+  let m=s.match(/(\d{4})[-/年.](\d{1,2})[-/月.](\d{1,2})/);
+  if(m) return m[1]+"-"+pad(m[2])+"-"+pad(m[3]);
+  m=s.match(/(\d{1,2})[-/](\d{1,2})[-/](\d{4})/);
+  if(m) return m[3]+"-"+pad(m[1])+"-"+pad(m[2]);
+  const d=new Date(s);
+  if(!isNaN(d)) return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+  return "";
+}
+const DONE=["paid","succeeded","success","completed","complete","完了","処理済み","支払い済み","支払済み","captured","成功","payment complete"];
+const isDone = v => { const s=norm(v); return DONE.some(d=>s===norm(d)||s.indexOf(norm(d))>=0); };
+
+/* ── import ────────────────────────────── */
+function hash(s){ let h=5381; for(let i=0;i<s.length;i++) h=((h*33)^s.charCodeAt(i))>>>0; return h.toString(36); }
+
+function readCsv(file){
+  const rd=new FileReader();
+  rd.onload=()=>{
+    const rows=parseCsv(String(rd.result||""));
+    if(rows.length<2){ $("#impResult").innerHTML='<p class="note">このファイルからデータを読み取れませんでした。CSV形式か確認してください。</p>'; return; }
+    const headers=rows[0], body=rows.slice(1), src=$("#i-src").value;
+    const map={date:guess(headers,"date"),amount:guess(headers,"amount"),fee:guess(headers,"fee"),
+      status:guess(headers,"status"),ref:guess(headers,"ref"),refund:guess(headers,"refund")};
+    const stats={};
+    if(map.status>=0) body.forEach(r=>{ const v=(r[map.status]||"（空欄）").trim()||"（空欄）"; stats[v]=(stats[v]||0)+1; });
+    const picked=new Set(Object.keys(stats).filter(isDone));
+    if(map.status>=0 && !picked.size) Object.keys(stats).forEach(k=>picked.add(k));
+    S.pending={headers:headers,body:body,map:map,src:src,stats:stats,picked:picked,dedupe:true,name:file.name};
+    renderImport();
+  };
+  rd.readAsText(file,"utf-8");
+}
+
+function buildImport(){
+  const P=S.pending, out=[], seen={};
+  const exts={}; Object.values(S.sales).forEach(r=>{ if(r.ext) exts[r.ext]=1; });
+  P.body.forEach(row=>{
+    if(P.map.status>=0){ const v=(row[P.map.status]||"（空欄）").trim()||"（空欄）"; if(!P.picked.has(v)) return; }
+    const date=toDate(row[P.map.date]); if(!date) return;
+    let amount=toNum(row[P.map.amount]);
+    if(P.map.refund>=0) amount-=toNum(row[P.map.refund]);
+    if(!(amount>0)) return;
+    const ref=(P.map.ref>=0 ? String(row[P.map.ref]||"").trim() : "");
+    const ext=P.src+":"+(ref||date+"|"+amount);
+    if(seen[ext]) return; seen[ext]=1;
+    const fee = P.map.fee>=0 ? Math.round(Math.abs(toNum(row[P.map.fee]))) : Math.round(amount*S.cfg.feeRate/100);
+    out.push({ id:date.replace(/-/g,"")+"-"+hash(ext),
+      rec:{date:date,amount:Math.round(amount),cost:Math.round(amount*S.cfg.costRate/100),fee:fee,
+        note:ref?("#"+ref):"",source:P.src,ext:ext,dup:false,ts:Date.now()},
+      known: !!exts[ext] });
+  });
+  return out;
+}
+
+function renderImport(){
+  const P=S.pending; if(!P){ $("#impResult").innerHTML=""; return; }
+  const opts=(sel)=> '<option value="-1">— なし —</option>'+P.headers.map((h,i)=>
+    '<option value="'+i+'"'+(i===sel?" selected":"")+">"+esc(h||("列"+(i+1)))+"</option>").join("");
+  const items=buildImport();
+  const fresh=items.filter(x=>!x.known);
+  const total=fresh.reduce((s,x)=>s+x.rec.amount,0);
+  const statHtml = Object.keys(P.stats).length
+    ? '<div class="stats">'+Object.keys(P.stats).sort().map(k=>
+        '<button class="stat" type="button" data-st="'+esc(k)+'" aria-pressed="'+P.picked.has(k)+'">'+esc(k)+'<em>'+P.stats[k]+'</em></button>').join("")+"</div>"
+    : '<p class="hint">ステータス列が見つかりませんでした。全行を取り込みます。</p>';
+  const prev=items.slice(0,10).map(x=>"<tr><td>"+x.rec.date+'</td><td class="num">'+num(x.rec.amount)
+    +'</td><td class="num">'+num(x.rec.fee)+'</td><td class="num">'+num(x.rec.cost)+"</td><td>"+esc(x.rec.note)
+    +"</td><td>"+(x.known?'<span class="src">取込済み</span>':"")+"</td></tr>").join("");
+
+  $("#impResult").innerHTML =
+    '<div class="sec"><h3>'+esc(P.name)+" — "+P.body.length+"行を読み込みました</h3>"
+    + '<div class="maps">'
+    + ["date:日付の列","amount:金額の列","fee:手数料の列","status:ステータスの列","ref:注文番号の列","refund:返金額の列"].map(s=>{
+        const [k,label]=s.split(":");
+        return '<div class="f"><label>'+label+'</label><select data-map="'+k+'">'+opts(P.map[k])+"</select></div>";
+      }).join("")
+    + "</div></div>"
+    + '<div class="sec"><h3>取り込むステータス</h3>'+statHtml+"</div>"
+    + '<div class="sec"><h3>プレビュー</h3><div class="prev"><table><thead><tr><th>日付</th><th class="num">売上</th>'
+    + '<th class="num">手数料</th><th class="num">原価(自動)</th><th>メモ</th><th></th></tr></thead><tbody>'+prev+"</tbody></table></div></div>"
+    + '<div class="form" style="margin-top:16px;align-items:center">'
+    + '<label class="hint" style="display:flex;gap:8px;align-items:center;cursor:pointer">'
+    + '<input type="checkbox" id="dedupe"'+(P.dedupe?" checked":"")+"> 同じ日・同じ金額の行が別ソースにあれば重複として除外する</label>"
+    + '<div class="spacer" style="flex:1"></div>'
+    + '<button class="btn quiet" type="button" id="impCancel">やめる</button>'
+    + '<button class="btn" type="button" id="impGo"'+(fresh.length?"":" disabled")+">"+fresh.length+"件 / "+yen(total)+" を取り込む</button></div>"
+    + (items.length-fresh.length ? '<p class="hint">'+(items.length-fresh.length)+"件は取り込み済みのため除外しました。</p>" : "");
+
+  $$("[data-map]").forEach(sel=>sel.addEventListener("change",()=>{ P.map[sel.dataset.map]=+sel.value; renderImport(); }));
+  $$("[data-st]").forEach(b=>b.addEventListener("click",()=>{
+    const k=b.dataset.st; P.picked.has(k)?P.picked.delete(k):P.picked.add(k); renderImport(); }));
+  const dd=$("#dedupe"); if(dd) dd.addEventListener("change",()=>{ P.dedupe=dd.checked; });
+  const cancel=$("#impCancel"); if(cancel) cancel.addEventListener("click",()=>{ S.pending=null; $("#impResult").innerHTML=""; $("#csvFile").value=""; });
+  const go=$("#impGo"); if(go) go.addEventListener("click", doImport);
+}
+
+async function doImport(){
+  const P=S.pending; if(!P) return;
+  const items=buildImport().filter(x=>!x.known);
+  if(!items.length) return;
+  const changed=[];
+  if(P.dedupe){
+    const existing=Object.entries(S.sales).map(([id,r])=>Object.assign({id:id},r));
+    items.forEach(x=>{
+      const hit=existing.find(r=>!r.dup && r.date===x.rec.date && (+r.amount||0)===x.rec.amount && r.source!==P.src);
+      if(!hit) return;
+      if(P.src==="woo" && hit.source==="stripe"){
+        changed.push({id:hit.id, rec:Object.assign({},S.sales[hit.id],{dup:true})});
+      } else { x.rec.dup=true; }
+    });
+  }
+  const go=$("#impGo"); if(go){ go.disabled=true; go.textContent="取り込み中…"; }
+  await putMany("sales", items.concat(changed));
+  const dups=items.filter(x=>x.rec.dup).length;
+  const first=items.map(x=>x.rec.date).sort()[0];
+  if(first) S.month=first.slice(0,7);
+  S.pending=null; $("#impResult").innerHTML=""; $("#csvFile").value="";
+  renderAll();
+  toast(items.length+"件を取り込みました"+(dups?"（うち"+dups+"件は重複として集計外）":""));
+}
+
+const drop=$("#drop");
+drop.addEventListener("click",()=>$("#csvFile").click());
+drop.addEventListener("dragover",e=>{ e.preventDefault(); drop.classList.add("over"); });
+drop.addEventListener("dragleave",()=>drop.classList.remove("over"));
+drop.addEventListener("drop",e=>{ e.preventDefault(); drop.classList.remove("over");
+  const f=e.dataTransfer.files && e.dataTransfer.files[0]; if(f) readCsv(f); });
+$("#csvFile").addEventListener("change",e=>{ const f=e.target.files&&e.target.files[0]; if(f) readCsv(f); });
+$("#i-src").addEventListener("change",()=>{ if(S.pending){ S.pending.src=$("#i-src").value; renderImport(); } });
+
+/* ── export ────────────────────────────── */
+function q(v){ const s=String(v==null?"":v); return /[",\n]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s; }
+function csvRows(rows){ return rows.map(r=>r.map(q).join(",")).join("\r\n"); }
+async function offer(filename, text){
+  if(S.dl){
+    try{ await S.dl.save({filename:filename, data:text}); toast("保存しました"); return; }
+    catch(e){ if(e && e.code==="declined") return; }
+  }
+  try{ await navigator.clipboard.writeText(text); toast("クリップボードにコピーしました。スプレッドシートに貼り付けてください。"); }
+  catch(e){ toast("書き出しできませんでした"); }
+}
+function salesRows(list){
+  return [["日付","売上","原価","決済手数料","粗利","ソース","メモ","集計対象"]].concat(
+    list.map(r=>[r.date,r.amount||0,r.cost||0,r.fee||0,(+r.amount||0)-(+r.cost||0)-(+r.fee||0),
+      ({stripe:"Stripe",woo:"WooCommerce",legacy:"旧シート",manual:"手入力"}[r.source]||"手入力"),
+      r.note||"", r.dup?"重複（対象外）":"対象"]));
+}
+function expRows(list){
+  return [["日付","科目","金額","メモ","領収書画像"]].concat(
+    list.map(r=>[r.date,r.category||"",r.amount||0,r.note||"",r.receipt?"あり":""]));
+}
+$("#expMonthCsv").addEventListener("click",()=>{
+  const m=S.month, a=agg(m);
+  const rows=[["VAPE MAFIA 売上台帳",m]].concat([[]])
+    .concat([["売上",a.amount],["原価",a.cost],["決済手数料",a.fee],["経費",a.exp],["粗利",a.gross],["営業利益",a.op],["件数",a.n]])
+    .concat([[]],[["売上明細"]]).concat(salesRows(salesOf(m)))
+    .concat([[]],[["経費"]]).concat(expRows(expensesOf(m)));
+  offer("vapemafia-"+m+".csv","﻿"+csvRows(rows));
+});
+$("#expAllCsv").addEventListener("click",()=>{
+  const ms=months().filter(m=>{ const a=agg(m); return a.amount||a.exp; });
+  const rows=[["VAPE MAFIA 売上台帳 — 全期間"]].concat([[]])
+    .concat([["月","売上","原価","決済手数料","経費","粗利","営業利益","件数","客単価","利益率"]])
+    .concat(ms.map(m=>{ const a=agg(m);
+      return [m,a.amount,a.cost,a.fee,a.exp,a.gross,a.op,a.n,a.n?Math.round(a.amount/a.n):0,
+        a.amount?(a.op/a.amount*100).toFixed(1)+"%":""]; }))
+    .concat([[]],[["売上明細（全期間）"]])
+    .concat(salesRows(Object.entries(S.sales).map(([id,r])=>Object.assign({id:id},r)).sort((a,b)=>a.date<b.date?-1:1)))
+    .concat([[]],[["経費（全期間）"]])
+    .concat(expRows(Object.entries(S.expenses).map(([id,r])=>Object.assign({id:id},r)).sort((a,b)=>a.date<b.date?-1:1)));
+  offer("vapemafia-all.csv","﻿"+csvRows(rows));
+});
+$("#expJson").addEventListener("click",()=>{
+  offer("vapemafia-backup-"+today()+".json", JSON.stringify({v:1,exportedAt:new Date().toISOString(),
+    cfg:S.cfg,sales:S.sales,expenses:S.expenses},null,1));
+});
+$("#jsonFile").addEventListener("change",e=>{
+  const f=e.target.files&&e.target.files[0]; if(!f) return;
+  const rd=new FileReader();
+  rd.onload=async ()=>{
+    let j; try{ j=JSON.parse(String(rd.result)); }catch(err){ toast("このファイルは読み込めませんでした"); return; }
+    if(!j || (!j.sales && !j.expenses)){ toast("バックアップの中身が見つかりませんでした"); return; }
+    const s=Object.keys(j.sales||{}).map(id=>({id:id,rec:j.sales[id]}));
+    const x=Object.keys(j.expenses||{}).map(id=>({id:id,rec:j.expenses[id]}));
+    if(j.cfg){ S.cfg=Object.assign(S.cfg,j.cfg); fillCfg(); saveCfg(); }
+    await putMany("sales",s); await putMany("expenses",x);
+    e.target.value=""; renderAll(); toast("売上"+s.length+"件・経費"+x.length+"件を復元しました");
+  };
+  rd.readAsText(f,"utf-8");
+});
+
+/* ── settings / theme / tabs ───────────── */
+function fillCfg(){ $("#cf-cost").value=S.cfg.costRate; $("#cf-fee").value=S.cfg.feeRate; }
+$("#saveCfg").addEventListener("click",()=>{
+  const c=parseFloat($("#cf-cost").value), f=parseFloat($("#cf-fee").value);
+  if(!isFinite(c)||!isFinite(f)||c<0||f<0||c>100||f>100){ toast("0〜100の数字を入れてください"); return; }
+  S.cfg.costRate=c; S.cfg.feeRate=f; saveCfg(); toast("保存しました");
+});
+$$(".tab").forEach(t=>t.addEventListener("click",()=>{
+  $$(".tab").forEach(o=>o.setAttribute("aria-selected", String(o===t)));
+  $$(".panel").forEach(p=>{ p.hidden = p.id!=="p-"+t.dataset.p; });
+}));
+const THEMES=["auto","light","dark"], TKEY="vm-theme";
+function applyTheme(v){
+  if(v==="auto") document.documentElement.removeAttribute("data-theme");
+  else document.documentElement.setAttribute("data-theme",v);
+  $("#themeBtn").textContent = {auto:"表示 自動",light:"表示 明",dark:"表示 暗"}[v];
+  try{ localStorage.setItem(TKEY,v); }catch(e){}
+  requestAnimationFrame(()=>{ drawTrend(); drawDaily(); });
+}
+$("#themeBtn").addEventListener("click",()=>{
+  let cur="auto"; try{ cur=localStorage.getItem(TKEY)||"auto"; }catch(e){}
+  applyTheme(THEMES[(THEMES.indexOf(cur)+1)%3]);
+});
+
+let rt;
+addEventListener("resize",()=>{ clearTimeout(rt); rt=setTimeout(()=>{ drawTrend(); drawDaily(); },140); });
+
+/* ── boot ──────────────────────────────── */
+loadCache();
+let t0="auto"; try{ t0=localStorage.getItem(TKEY)||"auto"; }catch(e){}
+applyTheme(t0);
+fillCfg();
+$("#s-date").value=today(); $("#e-date").value=today();
+setSync("local","読み込み中…");
+renderAll();
+initStore();
+})();
+</script>
